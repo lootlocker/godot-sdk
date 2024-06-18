@@ -17,8 +17,8 @@ static func FromJson(responseText) -> GuestSession:
 	var json = JSON.parse_string(responseText)
 	json["@path"] = _resourcePath
 	json["@subpath"] = ""
-	LootLockerData.set_data("session-token", json["session_token"])
-	LootLockerData.set_data("player-identifier", json["player_identifier"])
+	LootLockerConfig.set_data("session-token", json["session_token"])
+	LootLockerConfig.set_data("player-identifier", json["player_identifier"])
 	return dict_to_inst(json)
 
 func ToJson() -> String:

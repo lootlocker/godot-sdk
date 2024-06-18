@@ -10,13 +10,13 @@ var headers = [
 var apiKey = "dev_0e36be4fb03f4ad091b2c0a379b3250d"
 var gameVersion = "0.0.1"
 
-func _GuestLogin() -> GuestSession:
+func _guestLogin() -> GuestSession:
 
 	var endpoint = coreurl + "/game/v2/session/guest"
 	
 	var body = ""
 	
-	var player_identifier = LootLockerData.get_data("player-identifier", "")
+	var player_identifier = LootLockerConfig.get_data("player-identifier", "")
 	if player_identifier != "":
 		body = "{\"game_key\": \"" + apiKey + "\",\"player_identifier\": \"" + player_identifier + "\", \"game_version\": \"" + gameVersion + "\"}"
 	else:
@@ -31,8 +31,6 @@ func _GuestLogin() -> GuestSession:
 		await get_tree().process_frame
 	
 	assert(httpRequest.get_status() == HTTPClient.STATUS_CONNECTED)
-	
-	print(body)
 	
 	err = httpRequest.request(HTTPClient.METHOD_POST, endpoint, headers, body)
 
@@ -67,7 +65,7 @@ func _setPlayerName(newname) -> PlayerName:
 	var endpoint = coreurl + "/game/player/name"
 	headers.append("LL-Version: 2021-03-01")
 	
-	var token =  LootLockerData.get_data("session-token", "")
+	var token =  LootLockerConfig.get_data("session-token", "")
 	if token == "":
 		print("No x-session-token provided")
 		return
@@ -118,7 +116,7 @@ func _getPlayerName() -> PlayerName:
 	var endpoint = coreurl + "/game/player/name"
 	headers.append("LL-Version: 2021-03-01")
 	
-	var token =  LootLockerData.get_data("session-token", "")
+	var token =  LootLockerConfig.get_data("session-token", "")
 	if token == "":
 		print("No x-session-token provided")
 		return

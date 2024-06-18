@@ -1,5 +1,3 @@
-class_name LootLockerConfig
-
 extends Node
 
 var data: Dictionary = {}
