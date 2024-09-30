@@ -12,6 +12,7 @@ var gameVersion = "0.0.1"
 enum http_methods {GET = 0, POST = 2, PUT = 3, DELETE = 4, PATCH = 8, }
 
 # Guest login
+# TODO: Make a request + response instead (as startSteamSession)
 # TODO: Documentation
 func guestLogin() -> Requests.GuestSession:
 	var player_identifier = LootLockerConfig.get_data("player_identifier", "")
@@ -23,6 +24,25 @@ func guestLogin() -> Requests.GuestSession:
 	var guestRequest = await makeRequest(Requests.GuestSession.endPoint, Requests.GuestSession.http_method, body, false)
 	
 	return FromJson(guestRequest, ["player_identifier", "session_token"], Requests.GuestSession.new())
+
+# Start Steam session
+func startSteamSession() -> Requests.StartSteamSessionResponse:
+	
+	var steamRequest = Requests.StartSteamSessionRequest.new()
+	steamRequest.game_key = apiKey
+	steamRequest.platform = "steam"
+	steamRequest.game_version = gameVersion
+
+	# var player_identifier = LootLockerConfig.get_data("player_identifier", "")
+	# if player_identifier != "":
+	# 	steamRequest.player_identifier = player_identifier
+
+	# debug testing, lootohannes steam id
+	steamRequest.player_identifier = "76561199266573919"
+	print(ToJson(steamRequest))
+	var steamResponse = await makeRequest(Requests.StartSteamSessionRequest.endPoint, Requests.StartSteamSessionRequest.http_method, ToJson(steamRequest), false)
+	
+	return FromJson(steamResponse, ["player_identifier", "session_token"], Requests.StartSteamSessionResponse.new())
 
 # Ping
 # TODO: Documentation
@@ -43,6 +63,13 @@ static func FromJson(json_string, data_to_set: Array, object : Object):
 			pass
 	
 	return DictionaryToClass(json, object)
+
+# TODO: Move to utilities-file
+func ToJson(object : Object) -> String:
+	var dict = inst_to_dict(object)
+	dict.erase("@path")
+	dict.erase("@subpath")
+	return JSON.stringify(dict)
 
 # TODO: Error-handling for parsing
 # TODO: Move to utilities-file
