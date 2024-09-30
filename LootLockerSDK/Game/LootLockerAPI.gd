@@ -13,37 +13,51 @@ enum http_methods {GET = 0, POST = 2, PUT = 3, DELETE = 4, PATCH = 8, }
 
 # Guest login
 # TODO: Documentation
-func guestLogin() -> Sessions.GuestSession:
+func guestLogin() -> Requests.GuestSession:
 	var player_identifier = LootLockerConfig.get_data("player_identifier", "")
 	var body = "{\"game_key\": \"" + apiKey + "\", \"game_version\": \"" + gameVersion
 	if player_identifier != "":
 		body += "\",\"player_identifier\": \"" + player_identifier
 	body += "\", \"game_version\": \"" + gameVersion + "\"}"
+	
+	var guestRequest = await makeRequest(Requests.GuestSession.endPoint, Requests.GuestSession.http_method, body, false)
+	
+	return FromJson(guestRequest, ["player_identifier", "session_token"], Requests.GuestSession.new())
 
-	var guestRequest = await makeRequest(Sessions.GuestSession.endPoint, Sessions.GuestSession.http_method, body, false)
-	var session = Sessions.GuestSession.new()
-	#session._init()
-	print("resoucePath:"+session.get_resource_path())
-	# Parse into the desired class
-	return FromJson(guestRequest, ["player_identifier", "session_token"], session.get_resource_path()) as Sessions.GuestSession
+# Ping
+# TODO: Documentation
+func ping() -> Requests.Ping:
+	var pingRequest = await makeRequest(Requests.Ping.endPoint, Requests.Ping.http_method, "", true)
 
-func ping() -> Sessions.Ping:
-	var pingRequest = await makeRequest(Sessions.Ping.endPoint, Sessions.Ping.http_method, "", true)
-	# Parse into the desired class
-	return FromJson(pingRequest, [], Sessions.Ping.resourcePath) as Sessions.Ping
+	return FromJson(pingRequest, [], Requests.Ping.new())
 
+# TODO: Error-handling for parsing
 # Make into class from JSON
-static func FromJson(json_string, data_to_set: Array, resourcePath):
+static func FromJson(json_string, data_to_set: Array, object : Object):
 	var json = JSON.parse_string(json_string)
-	json["@path"] = resourcePath
-	print("resoucePath:"+resourcePath)
-	json["@subpath"] = ""
+	# Go through data_to_set and save those variables to LootLockerConfig
 	for i in json.size():
 		for j in data_to_set.size():
 			if data_to_set[j] == json.keys()[i]:
 				LootLockerConfig.set_data(json.keys()[i], json.values()[i])
 			pass
-	return dict_to_inst(json)
+	
+	return DictionaryToClass(json, object)
+
+# TODO: Error-handling for parsing
+# TODO: Move to utilities-file
+# TODO: Give kudos to this person, a life saver for json-parsing
+# Reduced implementation of https://github.com/fenix-hub/unirest-gdscript
+# https://forum.godotengine.org/t/convert-dictionary-array-to-class-object/80807
+static func DictionaryToClass( dict : Dictionary, object : Object ) -> Object:
+	var properties : Array = object.get_property_list()
+	for key in dict.keys():
+		for property in properties:
+			if property.name == key:
+				object.set( key, dict[ key ] )
+				break
+
+	return object
 
 # TODO: Remove asserts and handle errors properly, do not want to halt/crash the game
 func makeRequest(endpoint, requestType: http_methods, body, subsequentRequest):

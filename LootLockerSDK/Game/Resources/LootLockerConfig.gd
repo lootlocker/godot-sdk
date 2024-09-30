@@ -2,6 +2,8 @@ extends Node
 
 var data: Dictionary = {}
 
+# TODO: Rename to something for fitting: .dat, .data, .ini, .conf?
+# TODO: Test if this info is saved properly in WebGL
 var filename: String = "LootLockerConfig.save"
 var path: String = "user://"
 
