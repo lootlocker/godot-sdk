@@ -3,7 +3,10 @@ extends Node2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	
+
+	var steamSession = await LootLockerAPI.startSteamSession()
+
+	return 
 	var guestSession = await LootLockerAPI.guestLogin()
 	print("Identifier:"+guestSession.player_identifier)
 
