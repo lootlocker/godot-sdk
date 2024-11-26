@@ -25,7 +25,7 @@ class LL_GuestSessionRequest extends LLInternal_BaseRequest:
 		game_version = _game_version
 
 class GuestSession extends LLInternal_RequestDefinition:
-	func _init(playerIdentifier : String) -> void:
+	func _init(playerIdentifier : String = "") -> void:
 		response = LL_BaseSessionResponse.new()
 		if(playerIdentifier == ""):
 			playerIdentifier = LLInternal_LootLockerCache.current().get_data("player_identifier", "")
