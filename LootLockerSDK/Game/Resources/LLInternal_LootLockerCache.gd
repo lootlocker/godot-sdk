@@ -1,14 +1,21 @@
 extends Node
+class_name LLInternal_LootLockerCache
+
+static var _instance : LLInternal_LootLockerCache = null
 
 var data: Dictionary = {}
 
-# TODO: Rename to something for fitting: .dat, .data, .ini, .conf?
 # TODO: Test if this info is saved properly in WebGL
-var filename: String = "LootLockerConfig.save"
+var filename: String = "LootLockerCache.dat"
 var path: String = "user://"
 
 signal data_changed(key: String, value)
 
+static func current():
+	if(_instance == null):
+		_instance = LLInternal_LootLockerCache.new()
+	return _instance
+	
 func _init():
 	path = path + filename
 	if not FileAccess.file_exists(path):
@@ -44,3 +51,10 @@ func load_lootlocker_data():
 	else:
 		save_lootlocker_data()
 	file.close()
+	
+func clear():
+	DirAccess.remove_absolute(path)
+	_instance = null
+	
+func print_cache():
+	print(JSON.stringify(data, '\t'))
