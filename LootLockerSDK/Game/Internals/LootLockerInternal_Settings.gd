@@ -1,5 +1,5 @@
 @tool
-class_name LLInternal_Settings
+class_name LootLockerInternal_Settings
 
 const STAGE_URL : String = "api.stage.internal.dev.lootlocker.cloud"
 const PROD_URL : String = "api.lootlocker.com"
@@ -25,11 +25,11 @@ static func GetGameVersion() -> String:
 static func GetUrl() -> String:
 	return GetInstance().url
 
-static var _instance : LLInternal_Settings = null;
+static var _instance : LootLockerInternal_Settings = null;
 
-static func GetInstance() -> LLInternal_Settings:
+static func GetInstance() -> LootLockerInternal_Settings:
 	if _instance == null:
-		_instance = LLInternal_Settings.new()
+		_instance = LootLockerInternal_Settings.new()
 	return _instance
 
 func _init() -> void:

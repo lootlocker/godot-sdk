@@ -1,5 +1,5 @@
 extends Node
-class_name LLInternal_JsonUtilities
+class_name LootLockerInternal_JsonUtilities
 
 # Make into class from JSON
 static func ObjectFromJsonString(json_string, data_to_set: Array, object : Object):
@@ -12,11 +12,11 @@ static func DictionaryFromJsonString(json_string, data_to_set: Array):
 	var dictionary = JSON.parse_string(json_string)
 	if dictionary == null:
 		return {}
-	# Go through data_to_set and save those variables to LLInternal_LootLockerCache
+	# Go through data_to_set and save those variables to LootLockerInternal_LootLockerCache
 	for i in dictionary.size():
 		for j in data_to_set.size():
 			if data_to_set[j] == dictionary.keys()[i]:
-				LLInternal_LootLockerCache.current().set_data(dictionary.keys()[i], dictionary.values()[i])
+				LootLockerInternal_LootLockerCache.current().set_data(dictionary.keys()[i], dictionary.values()[i])
 			pass
 	
 	return dictionary

@@ -14,7 +14,7 @@ class LL_BaseSessionResponse extends LL_BaseResponse:
 	@export var check_deactivation_notifications: bool
 	@export var wallet_id : String
 
-class LL_GuestSessionRequest extends LLInternal_BaseRequest:
+class LL_GuestSessionRequest extends LootLockerInternal_BaseRequest:
 	@export var player_identifier : String
 	@export var game_key : String
 	@export var game_version : String
@@ -24,19 +24,19 @@ class LL_GuestSessionRequest extends LLInternal_BaseRequest:
 		game_key = _game_key
 		game_version = _game_version
 
-class GuestSession extends LLInternal_RequestDefinition:
+class GuestSession extends LootLockerInternal_RequestDefinition:
 	func _init(playerIdentifier : String = "") -> void:
 		response = LL_BaseSessionResponse.new()
 		if(playerIdentifier == ""):
-			playerIdentifier = LLInternal_LootLockerCache.current().get_data("player_identifier", "")
-		request = LL_GuestSessionRequest.new(playerIdentifier, LLInternal_Settings.GetApiKey(), LLInternal_Settings.GetGameVersion())
-		super._init("/game/v2/session/guest", LLInternal_HTTPClient.http_methods.POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
+			playerIdentifier = LootLockerInternal_LootLockerCache.current().get_data("player_identifier", "")
+		request = LL_GuestSessionRequest.new(playerIdentifier, LootLockerInternal_Settings.GetApiKey(), LootLockerInternal_Settings.GetGameVersion())
+		super._init("/game/v2/session/guest", LootLockerInternal_HTTPClient.http_methods.POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
 	
 	func send() -> LL_BaseSessionResponse:
 		await _send()
 		return response
 	
-class LL_SteamSessionRequest extends LLInternal_BaseRequest:
+class LL_SteamSessionRequest extends LootLockerInternal_BaseRequest:
 	@export var player_identifier : String
 	@export var platform : String
 	@export var game_key : String
@@ -48,11 +48,11 @@ class LL_SteamSessionRequest extends LLInternal_BaseRequest:
 		game_version = _game_version
 		platform = _platform
 
-class SteamSession extends LLInternal_RequestDefinition:
+class SteamSession extends LootLockerInternal_RequestDefinition:
 	func _init(playerIdentifier : String) -> void:
 		response = LL_BaseSessionResponse.new()
-		request = LL_SteamSessionRequest.new(playerIdentifier, LLInternal_Settings.GetApiKey(), LLInternal_Settings.GetGameVersion(), "steam")
-		super._init("/game/v2/session", LLInternal_HTTPClient.http_methods.POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
+		request = LL_SteamSessionRequest.new(playerIdentifier, LootLockerInternal_Settings.GetApiKey(), LootLockerInternal_Settings.GetGameVersion(), "steam")
+		super._init("/game/v2/session", LootLockerInternal_HTTPClient.http_methods.POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
 		
 	func send() -> LL_BaseSessionResponse:
 		await _send()
