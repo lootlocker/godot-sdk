@@ -1,2 +1,1 @@
 class_name LootLockerInternal_BaseRequest
-extends Resource

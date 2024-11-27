@@ -1,6 +1,6 @@
-extends Node
 class_name LootLockerInternal_RequestDefinition
 
+var responseType = null
 var response : LootLockerInternal_BaseResponse = null
 var request : LootLockerInternal_BaseRequest = null
 var endPoint : String = ""
@@ -11,8 +11,8 @@ func _init(_endPoint : String, _HTTPMethod : LootLockerInternal_HTTPClient.http_
 	endPoint = _endPoint
 	HTTPMethod = _HTTPMethod
 	FieldsToCache = _FieldsToCache
-	if response == null:
-		response = LootLockerInternal_BaseResponse.new()
+	if responseType == null:
+		responseType = LootLockerInternal_BaseResponse
 	if request == null:
 		request = LootLockerInternal_BaseRequest.new()
 
@@ -25,7 +25,7 @@ func _send():
 		return
 	var result = await LootLocker.makeRequest(endPoint, HTTPMethod, LootLockerInternal_JsonUtilities.ObjectToJsonString(request))
 	
-	response = LootLockerInternal_JsonUtilities.ObjectFromJsonString(result.body, FieldsToCache, response)
+	response = LootLockerInternal_JsonUtilities.ObjectFromJsonString(result.body, FieldsToCache, responseType)
 	response.raw_response_body = result.body
 	response.status_code = result.statusCode
 	response.success = result.success

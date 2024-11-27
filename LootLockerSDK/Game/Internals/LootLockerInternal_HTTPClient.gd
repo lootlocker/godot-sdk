@@ -21,10 +21,10 @@ func _ready() -> void:
 	pass
 
 class LLHTTPRequestResult:
-	@export var body : String
-	@export var statusCode : int
-	@export var success : bool
-	@export var retryAfterSeconds : int
+	var body : String
+	var statusCode : int
+	var success : bool
+	var retryAfterSeconds : int
 	
 	func _init(_body : String, _statusCode : int, _success : bool, _retryAfterSeconds : int) -> void:
 		body = _body
