@@ -1,6 +1,7 @@
 extends Node
 class_name LootLockerInternal_JsonUtilities
 
+#region From JSON
 # Make into class from JSON
 static func ObjectFromJsonString(json_string, data_to_set: Array, object : Object):
 	return DictionaryToClass(DictionaryFromJsonString(json_string, data_to_set), object)
@@ -21,23 +22,91 @@ static func DictionaryFromJsonString(json_string, data_to_set: Array):
 	
 	return dictionary
 	
-# Reduced implementation of https://github.com/fenix-hub/unirest-gdscript
-# https://forum.godotengine.org/t/convert-dictionary-array-to-class-object/80807
-static func DictionaryToClass( dict : Dictionary, object : Object ) -> Object:
-	if dict == null || object == null:
-		return object
-	var properties : Array = object.get_property_list()
-	for key in dict.keys():
-		for property in properties:
-			if property.name == key:
-				if property.type == TYPE_OBJECT:
-					var akjlsd = ClassDB.instantiate(property.class_name)
-					object.set(key, DictionaryToClass(dict[key], akjlsd))
-				else:
-					object.set( key, dict[ key ] )
-				break
-	return object
+static func GetLootLockerObjectFromFieldReflection(fieldName : String, onClass : Object):
+	var LLReflection : Dictionary = {}
+	if onClass.has_method("__LootLockerInternal_GetReflection"):
+		LLReflection = onClass.__LootLockerInternal_GetReflection()
+	else:
+		printerr("LootLocker reflection was requested for object without reflection defined. Field name was " + fieldName + ". Please reach out to the LootLocker team with this error")
+	return LLReflection.get(fieldName, null)
 
+## Converts a JSON dictionary into a Godot class instance.
+## Based on https://github.com/EiTaNBaRiBoA/JsonClassConverter, but adapted for LootLocker Internal and specialized deserialization
+static func DictionaryToClass(dict: Dictionary, castClass) -> Object:
+	if dict == null:
+		return null
+	if castClass == null:
+		return null
+	# Create an instance of the target class
+	var _class: Object = castClass.new() as Object
+	var properties: Array = _class.get_property_list()
+
+	# Iterate through each key-value pair in the JSON dictionary
+	for key: String in dict.keys():
+		var value: Variant = dict[key]
+		
+		# Special handling for Vector types (stored as strings in JSON)
+		if type_string(typeof(value)) == "String" and value.begins_with("Vector"):
+			value = str_to_var(value)
+
+		# Find the matching property in the target class
+		for property: Dictionary in properties:
+			# Skip the 'script' property (built-in)
+			if property.name == "script":
+				continue
+
+			# Get the current value of the property in the class instance
+			var property_value: Variant = _class.get(property.name)
+
+			# If the property name matches the JSON key
+			if property.name == key:
+				# Case 1: Property is an Object (not an array)
+				if not property_value is Array and property.type == TYPE_OBJECT:
+					_class.set(property.name, DictionaryToClass(value, GetLootLockerObjectFromFieldReflection(property.name, castClass)))
+
+				# Case 2: Property is an Array
+				elif property_value is Array:
+					# Recursively convert the JSON array to a Godot array
+					var arrayTemp: Array = JsonArrayToClass(value, GetLootLockerObjectFromFieldReflection(property.name, castClass))
+					
+					# Handle Vector arrays (convert string elements back to Vectors)
+					if type_string(property_value.get_typed_builtin()).begins_with("Vector"):
+						for obj_array: Variant in arrayTemp:
+							_class.get(property.name).append(str_to_var(obj_array))
+					else:
+						_class.get(property.name).assign(arrayTemp)
+
+				# Case 3: Property is a simple type (not an object or array)
+				else:
+					# Special handling for Color type (stored as a hex string)
+					if property.type == TYPE_COLOR:
+						value = Color(value)
+					_class.set(property.name, value)
+
+	# Return the fully deserialized class instance
+	return _class
+
+## Helper function to recursively convert JSON arrays to Godot arrays.
+## Based on https://github.com/EiTaNBaRiBoA/JsonClassConverter, but adapted for LootLocker Internal and specialized deserialization
+static func JsonArrayToClass(json_array: Array, cast_class) -> Array:
+	var godot_array: Array = []
+	for element: Variant in json_array:
+		# Case 1: Property is an Object (not an array), so deserialize the element
+		if typeof(element) == TYPE_DICTIONARY:
+			godot_array.append(DictionaryToClass(element, cast_class))	
+		# Case 2: Property is an Array, so recursively unpack elements
+		elif typeof(element) == TYPE_ARRAY:
+			godot_array.append(JsonArrayToClass(element, cast_class))
+		# Case 3: Property is a simple type (not an object or array)
+		else:
+			# Special handling for Color type (stored as a hex string)
+			if element.type == TYPE_COLOR:
+				element = Color(element)
+			godot_array.append(element)
+	return godot_array
+#endregion
+
+#region To JSON
 static func ObjectToJsonString(object : Object, minimized : bool = true) -> String:
 	return DictionaryToJsonString(ObjectToDictionary(object), minimized)
 
@@ -63,8 +132,9 @@ static func ObjectToDictionary(object : Object) -> Dictionary:
 	return dictionary
 
 static func DictionaryToJsonString(dictionary : Dictionary, minimized : bool = true) -> String:
-	if(dictionary == null):
+	if(dictionary == null || dictionary.is_empty()):
 		return "{}"
-	if !minimized:
-		return JSON.stringify(dictionary, '\t')
-	return JSON.stringify(dictionary)
+	if minimized:
+		return JSON.stringify(dictionary)
+	return JSON.stringify(dictionary, '\t')
+#endregion

@@ -5,7 +5,6 @@ static var _instance : LootLockerInternal_LootLockerCache = null
 
 var data: Dictionary = {}
 
-# TODO: Test if this info is saved properly in WebGL
 var filename: String = "LootLockerCache.dat"
 var path: String = "user://"
 
