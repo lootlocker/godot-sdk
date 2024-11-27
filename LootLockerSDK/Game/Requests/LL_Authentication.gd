@@ -1,7 +1,7 @@
 class_name LL_Authentication
 const __SESSION_RESPONSE_FIELDS_TO_CACHE : Array[String] = ["session_token", "player_identifier", "player_name", "player_id", "player_ulid", "wallet_id"]
 
-class LL_BaseSessionResponse extends LL_BaseResponse:
+class LL_BaseSessionResponse extends LootLockerInternal_BaseResponse:
 	@export var session_token : String
 	@export var public_uid : String
 	@export var player_name : String

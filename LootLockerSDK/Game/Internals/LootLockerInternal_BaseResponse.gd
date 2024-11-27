@@ -1,5 +1,5 @@
 extends Node
-class_name LL_BaseResponse
+class_name LootLockerInternal_BaseResponse
 
 class LL_ErrorData extends Node:
 	@export var code : String

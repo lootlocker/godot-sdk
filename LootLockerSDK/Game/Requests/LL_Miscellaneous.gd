@@ -1,6 +1,6 @@
 class_name LL_Miscellaneous
 
-class LL_PingResponse extends LL_BaseResponse:
+class LL_PingResponse extends LootLockerInternal_BaseResponse:
 	@export var date : String
 
 class Ping extends LootLockerInternal_RequestDefinition:
