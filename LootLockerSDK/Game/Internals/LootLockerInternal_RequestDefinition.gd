@@ -1,7 +1,7 @@
 extends Node
 class_name LootLockerInternal_RequestDefinition
 
-var response : LL_BaseResponse = null
+var response : LootLockerInternal_BaseResponse = null
 var request : LootLockerInternal_BaseRequest = null
 var endPoint : String = ""
 var HTTPMethod : LootLockerInternal_HTTPClient.http_methods = LootLockerInternal_HTTPClient.http_methods.GET
@@ -12,7 +12,7 @@ func _init(_endPoint : String, _HTTPMethod : LootLockerInternal_HTTPClient.http_
 	HTTPMethod = _HTTPMethod
 	FieldsToCache = _FieldsToCache
 	if response == null:
-		response = LL_BaseResponse.new()
+		response = LootLockerInternal_BaseResponse.new()
 	if request == null:
 		request = LootLockerInternal_BaseRequest.new()
 
@@ -32,6 +32,6 @@ func _send():
 	if result.success:
 		response.error_data = null
 	else:
-		response.error_data = LootLockerInternal_JsonUtilities.ObjectFromJsonString(response.raw_response_body, [], LL_BaseResponse.LL_ErrorData.new())
+		response.error_data = LootLockerInternal_JsonUtilities.ObjectFromJsonString(response.raw_response_body, [], LootLockerInternal_BaseResponse.LL_ErrorData.new())
 		response.error_data.retry_after_seconds = result.retryAfterSeconds
 	responseHandler()
