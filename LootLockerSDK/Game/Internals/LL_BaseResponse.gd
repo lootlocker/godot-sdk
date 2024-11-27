@@ -10,7 +10,7 @@ class LL_ErrorData extends Node:
 	@export var retry_after_seconds : int
 
 	func _to_string() -> String:
-		return LLInternal_JsonUtilities.ObjectToJsonString(self, false)
+		return LootLockerInternal_JsonUtilities.ObjectToJsonString(self, false)
 
 @export var success : bool
 @export var status_code : int
@@ -18,4 +18,4 @@ class LL_ErrorData extends Node:
 @export var error_data : LL_ErrorData
 
 func _to_string() -> String:
-	return LLInternal_JsonUtilities.ObjectToJsonString(self, false)
+	return LootLockerInternal_JsonUtilities.ObjectToJsonString(self, false)

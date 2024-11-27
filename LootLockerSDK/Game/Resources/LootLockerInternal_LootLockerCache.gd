@@ -1,7 +1,7 @@
 extends Node
-class_name LLInternal_LootLockerCache
+class_name LootLockerInternal_LootLockerCache
 
-static var _instance : LLInternal_LootLockerCache = null
+static var _instance : LootLockerInternal_LootLockerCache = null
 
 var data: Dictionary = {}
 
@@ -13,7 +13,7 @@ signal data_changed(key: String, value)
 
 static func current():
 	if(_instance == null):
-		_instance = LLInternal_LootLockerCache.new()
+		_instance = LootLockerInternal_LootLockerCache.new()
 	return _instance
 	
 func _init():

@@ -1,7 +1,7 @@
 extends HTTPRequest
-class_name LLInternal_HTTPClient
+class_name LootLockerInternal_HTTPClient
 
-static var _instance : LLInternal_HTTPClient = null
+static var _instance : LootLockerInternal_HTTPClient = null
 
 var err = 0
 var httpRequest = HTTPClient.new()
@@ -11,9 +11,9 @@ var headers = [
 
 enum http_methods {GET = 0, POST = 2, PUT = 3, DELETE = 4, PATCH = 8, }
 
-static func GetInstance() -> LLInternal_HTTPClient:
+static func GetInstance() -> LootLockerInternal_HTTPClient:
 	if _instance == null:
-		_instance = LLInternal_HTTPClient.new()
+		_instance = LootLockerInternal_HTTPClient.new()
 	return _instance
 	
 func _ready() -> void:
@@ -35,14 +35,14 @@ class LLHTTPRequestResult:
 		retryAfterSeconds = _retryAfterSeconds
 
 func makeRequest(endpoint, requestType: http_methods, body) -> LLHTTPRequestResult:
-	var url = LLInternal_Settings.GetUrl()
+	var url = LootLockerInternal_Settings.GetUrl()
 	err = httpRequest.connect_to_host(url)
 
 	if err != OK:
 		return LLHTTPRequestResult.new("{ \"message\": \"Could not connect to LootLocker, error code was "+err+"\"}", 0, false, -1)
 
 	# Add session-token if a subsequent request
-	var sessionToken = LLInternal_LootLockerCache.current().get_data("session_token", "")
+	var sessionToken = LootLockerInternal_LootLockerCache.current().get_data("session_token", "")
 	if(sessionToken != ""):
 		headers.append("x-session-token: " + sessionToken)
 
