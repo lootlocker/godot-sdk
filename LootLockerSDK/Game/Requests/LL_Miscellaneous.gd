@@ -6,7 +6,7 @@ class LL_PingResponse extends LootLockerInternal_BaseResponse:
 class Ping extends LootLockerInternal_RequestDefinition:
 	func _init() -> void:
 		responseType = LL_PingResponse
-		super._init("/game/ping", LootLockerInternal_HTTPClient.http_methods.GET)
+		super._init("/game/ping", HTTPClient.Method.METHOD_GET)
 	
 	func send() -> LL_PingResponse:
 		await _send()

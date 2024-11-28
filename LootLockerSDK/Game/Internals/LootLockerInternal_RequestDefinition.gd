@@ -4,10 +4,10 @@ var responseType = null
 var response : LootLockerInternal_BaseResponse = null
 var request : LootLockerInternal_BaseRequest = null
 var endPoint : String = ""
-var HTTPMethod : LootLockerInternal_HTTPClient.http_methods = LootLockerInternal_HTTPClient.http_methods.GET
+var HTTPMethod : HTTPClient.Method = HTTPClient.Method.METHOD_GET
 var FieldsToCache : Array[String] = []
 
-func _init(_endPoint : String, _HTTPMethod : LootLockerInternal_HTTPClient.http_methods, _FieldsToCache : Array[String] = []) -> void:
+func _init(_endPoint : String, _HTTPMethod : HTTPClient.Method, _FieldsToCache : Array[String] = []) -> void:
 	endPoint = _endPoint
 	HTTPMethod = _HTTPMethod
 	FieldsToCache = _FieldsToCache
@@ -32,6 +32,6 @@ func _send():
 	if result.success:
 		response.error_data = null
 	else:
-		response.error_data = LootLockerInternal_JsonUtilities.ObjectFromJsonString(response.raw_response_body, [], LootLockerInternal_BaseResponse.LL_ErrorData.new())
+		response.error_data = LootLockerInternal_JsonUtilities.ObjectFromJsonString(response.raw_response_body, [], LootLockerInternal_BaseResponse.LL_ErrorData)
 		response.error_data.retry_after_seconds = result.retryAfterSeconds
 	responseHandler()
