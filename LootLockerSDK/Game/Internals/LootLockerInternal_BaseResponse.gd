@@ -1,6 +1,6 @@
 class_name LootLockerInternal_BaseResponse
 
-class LL_ErrorData extends Resource:
+class LL_ErrorData:
 	var code : String
 	var doc_url : String
 	var request_id : String

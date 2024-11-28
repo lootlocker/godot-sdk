@@ -8,6 +8,7 @@ var apiKey : String = ""
 var gameVersion : String = ""
 var domainKey : String = ""
 var url : String
+var shouldLogDebugInformation : bool = false
 
 static func _static_init() -> void:
 	if Engine.is_editor_hint():
@@ -24,6 +25,9 @@ static func GetGameVersion() -> String:
 	
 static func GetUrl() -> String:
 	return GetInstance().url
+	
+static func ShouldLogDebugInformation() -> bool:
+	return GetInstance().shouldLogDebugInformation
 
 static var _instance : LootLockerInternal_Settings = null;
 
@@ -56,6 +60,7 @@ func _init() -> void:
 		url = urlStart+STAGE_URL
 	else:
 		url = urlStart+PROD_URL
+	shouldLogDebugInformation = settings.get_value("LootLockerInternalSettings", "debug_log", false)
 	return
 
 static func __CreateSettingsFile():

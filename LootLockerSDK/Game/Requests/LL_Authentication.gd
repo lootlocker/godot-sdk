@@ -30,7 +30,7 @@ class GuestSession extends LootLockerInternal_RequestDefinition:
 		if(playerIdentifier == ""):
 			playerIdentifier = LootLockerInternal_LootLockerCache.current().get_data("player_identifier", "")
 		request = LL_GuestSessionRequest.new(playerIdentifier)
-		super._init("/game/v2/session/guest", LootLockerInternal_HTTPClient.http_methods.POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
+		super._init("/game/v2/session/guest", HTTPClient.Method.METHOD_POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
 	
 	func send() -> LL_BaseSessionResponse:
 		await _send()
@@ -60,7 +60,7 @@ class SteamSession extends LootLockerInternal_RequestDefinition:
 			request = LL_SteamSessionRequestWithAppId.new(steamTicket, steamAppId)
 		else:
 			request = LL_SteamSessionRequest.new(steamTicket)
-		super._init("/game/session/steam", LootLockerInternal_HTTPClient.http_methods.POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
+		super._init("/game/session/steam", HTTPClient.Method.METHOD_POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
 		
 	func send() -> LL_BaseSessionResponse:
 		await _send()
