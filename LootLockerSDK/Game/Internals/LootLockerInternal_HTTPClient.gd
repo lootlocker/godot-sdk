@@ -9,7 +9,7 @@ var headers = [
 	"Content-Type: application/json"
 ]
 
-enum http_methods {GET = 0, POST = 2, PUT = 3, DELETE = 4, PATCH = 8, }
+static var HTTP_METHOD_STRINGS : Array = ["GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE", "CONNECT", "PATCH"]
 
 static func GetInstance() -> LootLockerInternal_HTTPClient:
 	if _instance == null:
@@ -33,13 +33,19 @@ class LLHTTPRequestResult:
 		if _retryAfterSeconds < 0:
 			retryAfterSeconds = 2147483647
 		retryAfterSeconds = _retryAfterSeconds
+		
+static func logLootLockerRequest(endpoint, requestType, body, result : LLHTTPRequestResult):
+	if LootLockerInternal_Settings.ShouldLogDebugInformation():
+		print("##LootLockerDebug## -- " + HTTP_METHOD_STRINGS[requestType] + " to " + endpoint + "\n  with request body "+body+"\n  gave result: "+LootLockerInternal_JsonUtilities.ObjectToJsonString(result))
 
-func makeRequest(endpoint, requestType: http_methods, body) -> LLHTTPRequestResult:
+func makeRequest(endpoint, requestType: HTTPClient.Method, body) -> LLHTTPRequestResult:
 	var url = LootLockerInternal_Settings.GetUrl()
 	err = httpRequest.connect_to_host(url)
 
 	if err != OK:
-		return LLHTTPRequestResult.new("{ \"message\": \"Could not connect to LootLocker, error code was "+err+"\"}", 0, false, -1)
+		var res = LLHTTPRequestResult.new("{ \"message\": \"Could not connect to LootLocker, error code was "+err+"\"}", 0, false, -1)
+		logLootLockerRequest(endpoint, requestType, body, res)
+		return res
 
 	# Add session-token if a subsequent request
 	var sessionToken = LootLockerInternal_LootLockerCache.current().get_data("session_token", "")
@@ -52,19 +58,25 @@ func makeRequest(endpoint, requestType: http_methods, body) -> LLHTTPRequestResu
 	
 	var httpConnectStatus = httpRequest.get_status()
 	if httpConnectStatus != HTTPClient.STATUS_CONNECTED:
-		return LLHTTPRequestResult.new("{ \"message\": \"Could not connect to LootLocker, http status was "+httpConnectStatus+"\"}", 0, false, -1)
+		var res = LLHTTPRequestResult.new("{ \"message\": \"Could not connect to LootLocker, http status was "+httpConnectStatus+"\"}", 0, false, -1)
+		logLootLockerRequest(endpoint, requestType, body, res)
+		return res
 	
 	err = httpRequest.request(requestType as HTTPClient.Method, endpoint, headers, body)
 
 	if err != OK:
-		return LLHTTPRequestResult.new("{ \"message\": \"LootLocker request failed with code " + err + "\"}", httpRequest.get_response_code(), false, -1)
+		var res = LLHTTPRequestResult.new("{ \"message\": \"LootLocker request failed with code " + err + "\"}", httpRequest.get_response_code(), false, -1)
+		logLootLockerRequest(endpoint, requestType, body, res)
+		return res
 		
 	while httpRequest.get_status() == HTTPClient.STATUS_REQUESTING:
 		httpRequest.poll()
 		await Engine.get_main_loop().process_frame
 		
 	if httpRequest.get_status() != HTTPClient.STATUS_BODY || httpRequest.get_status() == HTTPClient.STATUS_CONNECTED:
-		return LLHTTPRequestResult.new("{ \"message\": \"LootLocker request failed with code " + err + "\"}", httpRequest.get_response_code(), false, -1)
+		var res = LLHTTPRequestResult.new("{ \"message\": \"LootLocker request failed with code " + err + "\"}", httpRequest.get_response_code(), false, -1)
+		logLootLockerRequest(endpoint, requestType, body, res)
+		return res
 	
 	if(httpRequest.has_response()):
 		var rb = PackedByteArray()
@@ -79,5 +91,7 @@ func makeRequest(endpoint, requestType: http_methods, body) -> LLHTTPRequestResu
 		
 		var code = httpRequest.get_response_code()
 		var RetryAfterSeconds : int = httpRequest.get_response_headers_as_dictionary().get("Retry-After", 2147483647)
-		return LLHTTPRequestResult.new(text, code, code >= 200 && code <= 299, RetryAfterSeconds)
+		var res = LLHTTPRequestResult.new(text, code, code >= 200 && code <= 299, RetryAfterSeconds)
+		logLootLockerRequest(endpoint, requestType, body, res)
+		return res
 	return null
