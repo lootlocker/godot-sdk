@@ -17,7 +17,7 @@ static func DictionaryFromJsonString(json_string, data_to_set: Array):
 	for i in dictionary.size():
 		for j in data_to_set.size():
 			if data_to_set[j] == dictionary.keys()[i]:
-				LootLockerInternal_LootLockerCache.current().set_data(dictionary.keys()[i], dictionary.values()[i])
+				preload("../Resources/LootLockerInternal_LootLockerCache.gd").current().set_data(dictionary.keys()[i], dictionary.values()[i])
 			pass
 	
 	return dictionary
