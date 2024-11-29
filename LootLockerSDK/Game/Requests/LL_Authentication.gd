@@ -21,13 +21,15 @@ class LL_GuestSessionRequest extends LootLockerInternal_BaseRequest:
 	
 	func _init(_player_identifier : String):
 		player_identifier = _player_identifier
-		game_key = LootLockerInternal_Settings.GetApiKey()
-		game_version = LootLockerInternal_Settings.GetGameVersion()
+		var LootLockerSettings = preload("../Internals/LootLockerInternal_Settings.gd")
+		game_key = LootLockerSettings.GetApiKey()
+		game_version = LootLockerSettings.GetGameVersion()
 
 class GuestSession extends LootLockerInternal_RequestDefinition:
 	func _init(playerIdentifier : String = "") -> void:
 		responseType = LL_BaseSessionResponse
 		if(playerIdentifier == ""):
+			var LootLockerCache = preload("../Resources/LootLockerInternal_LootLockerCache.gd")
 			playerIdentifier = LootLockerInternal_LootLockerCache.current().get_data("player_identifier", "")
 		request = LL_GuestSessionRequest.new(playerIdentifier)
 		super._init("/game/v2/session/guest", HTTPClient.Method.METHOD_POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
@@ -43,8 +45,9 @@ class LL_SteamSessionRequest extends LootLockerInternal_BaseRequest:
 	
 	func _init(_steam_ticket : String):
 		steam_ticket = _steam_ticket
-		game_api_key = LootLockerInternal_Settings.GetApiKey()
-		game_version = LootLockerInternal_Settings.GetGameVersion()
+		var LootLockerSettings = preload("../Internals/LootLockerInternal_Settings.gd")
+		game_api_key = LootLockerSettings.GetApiKey()
+		game_version = LootLockerSettings.GetGameVersion()
 	
 class LL_SteamSessionRequestWithAppId extends LL_SteamSessionRequest:
 	var steam_app_id : String
