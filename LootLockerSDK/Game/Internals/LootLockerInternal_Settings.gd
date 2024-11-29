@@ -42,7 +42,13 @@ func _init() -> void:
 	if ( err != OK ):
 		if Engine.is_editor_hint():
 			__CreateSettingsFile()
-		printerr("LootLockerError: Could not load settings file. Make sure that res://LootLockerSDK/LL_Settings.cfg exists and is populated with your settings.")
+			err = settings.load(SETTINGS_PATH)
+			if ( err != OK ):
+				printerr("LootLockerError: Could not load settings file. Make sure that res://LootLockerSDK/LL_Settings.cfg exists and is populated with your settings.")
+				return
+		else:
+			printerr("LootLockerError: Could not load settings file. Make sure that res://LootLockerSDK/LL_Settings.cfg exists and is populated with your settings.")
+			return
 	apiKey = settings.get_value("LootLockerSettings", "api_key", "")
 	domainKey = settings.get_value("LootLockerSettings", "domain_key", "")
 	gameVersion = settings.get_value("LootLockerSettings", "game_version", "")
@@ -74,4 +80,7 @@ static func __CreateSettingsFile():
 		file.store_line("; The game version must follow a semver pattern. Read more at https://semver.org/")
 		file.store_line("game_version=\"\"")
 		file.close()
-		EditorInterface.get_resource_filesystem().scan()
+		if Engine.is_editor_hint(): 
+			var editor_interface = Engine.get_singleton("EditorInterface")
+			if editor_interface:
+				editor_interface.get_resource_filesystem().scan()

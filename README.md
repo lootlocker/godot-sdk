@@ -62,7 +62,7 @@ if(!guestLoginResponse.success) :
   return
 var pingResponse = await LL_Miscellaneous.Ping.new().send()
 if(!pingResponse.success) :
-  printerr("Ping towards LootLocker failed wiht reason: " + pingResponse.error_data.to_string())
+  printerr("Ping towards LootLocker failed with reason: " + pingResponse.error_data.to_string())
   return
 ```
 or if you wanted to authenticate the guest user with an identifier they provide through UI for example you'd call it like this:
@@ -72,6 +72,12 @@ if(!guestLoginResponse.success) :
   printerr("Login failed with reason: " + guestLoginResponse.error_data.to_string())
   return
 ```
+
+## Exporting your project
+
+LootLocker uses the LootLockerSettings.cfg file that [you configured](#configuration) for its internal workings. So for your exported build to work, you will need to add it to your exported files explicitly.
+
+You do that in Godot by adding `res://LootLockerSettings.cfg` to `Project > Export > (choose your preset) > Resources > Filters to export non-resource files/folders`.
 
 ## Development
 

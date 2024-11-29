@@ -9,7 +9,8 @@ class LL_ErrorData:
 	var retry_after_seconds : int
 
 	func _to_string() -> String:
-		return LootLockerInternal_JsonUtilities.ObjectToJsonString(self, false)
+		var __JsonParser = preload("./LootLockerInternal_JsonUtilities.gd")
+		return __JsonParser.ObjectToJsonString(self, false)
 
 var success : bool
 var status_code : int
@@ -20,4 +21,5 @@ static func __LootLockerInternal_GetReflection() -> Dictionary:
 	return { "error_data" : LL_ErrorData }
 
 func _to_string() -> String:
-	return LootLockerInternal_JsonUtilities.ObjectToJsonString(self, false)
+	var __JsonParser = preload("./LootLockerInternal_JsonUtilities.gd")
+	return __JsonParser.ObjectToJsonString(self, false)
