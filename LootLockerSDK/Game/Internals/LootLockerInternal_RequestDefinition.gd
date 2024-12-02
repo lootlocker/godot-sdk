@@ -42,6 +42,8 @@ func _send():
 		return
 	
 	var requestBody = __JsonParser.ObjectToJsonString(request)
+	if HTTPMethod == HTTPClient.Method.METHOD_GET || HTTPMethod == HTTPClient.Method.METHOD_HEAD:
+		requestBody = ""
 	var result = await LootLocker.makeRequest(endPoint, HTTPMethod, requestBody)
 	if !result:
 		response = __MakeErrorResponse("Received null result from HTTP Client")
