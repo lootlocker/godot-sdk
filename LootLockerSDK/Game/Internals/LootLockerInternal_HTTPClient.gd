@@ -72,7 +72,7 @@ func makeRequest(endpoint, requestType: HTTPClient.Method, body) -> LL_HTTPReque
 	err = httpClient.request(requestType as HTTPClient.Method, endpoint, headers, body)
 
 	if err != OK:
-		var res = LL_HTTPRequestResult.new("{ \"message\": \"LootLocker request failed with code " + err + "\"}", httpClient.get_response_code(), false, -1)
+		var res = LL_HTTPRequestResult.new("{ \"message\": \"LootLocker request failed with code " + str(err) + "\"}", httpClient.get_response_code(), false, -1)
 		logLootLockerRequest(endpoint, requestType, body, res)
 		return res
 		
@@ -81,7 +81,7 @@ func makeRequest(endpoint, requestType: HTTPClient.Method, body) -> LL_HTTPReque
 		await Engine.get_main_loop().process_frame
 		
 	if httpClient.get_status() != HTTPClient.STATUS_BODY || httpClient.get_status() == HTTPClient.STATUS_CONNECTED:
-		var res = LL_HTTPRequestResult.new("{ \"message\": \"LootLocker request failed with code " + err + "\"}", httpClient.get_response_code(), false, -1)
+		var res = LL_HTTPRequestResult.new("{ \"message\": \"LootLocker request failed with code " + str(err) + "\"}", httpClient.get_response_code(), false, -1)
 		logLootLockerRequest(endpoint, requestType, body, res)
 		return res
 	

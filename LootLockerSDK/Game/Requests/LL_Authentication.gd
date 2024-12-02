@@ -35,6 +35,8 @@ class GuestSession extends LootLockerInternal_RequestDefinition:
 		super._init("/game/v2/session/guest", HTTPClient.Method.METHOD_POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
 	
 	func send() -> LL_BaseSessionResponse:
+		var LootLockerCache = preload("../Resources/LootLockerInternal_LootLockerCache.gd").current()
+		LootLockerCache.delete_data("session_token")
 		await _send()
 		return response
 	
@@ -66,5 +68,7 @@ class SteamSession extends LootLockerInternal_RequestDefinition:
 		super._init("/game/session/steam", HTTPClient.Method.METHOD_POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
 		
 	func send() -> LL_BaseSessionResponse:
+		var LootLockerCache = preload("../Resources/LootLockerInternal_LootLockerCache.gd").current()
+		LootLockerCache.delete_data("session_token")
 		await _send()
 		return response		
