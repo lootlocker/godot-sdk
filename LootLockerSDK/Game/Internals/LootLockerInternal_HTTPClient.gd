@@ -1,3 +1,6 @@
+## Internal LootLocker utility class that is used to send HTTP requests
+##
+##[color=light green][b]Copyright (c) 2024 LootLocker.[/b][/color]
 extends HTTPRequest
 class_name LootLockerInternal_HTTPClient
 

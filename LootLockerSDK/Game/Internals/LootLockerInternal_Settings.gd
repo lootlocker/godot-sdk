@@ -1,5 +1,23 @@
+## Internal LootLocker utility class that is used for configuring LootLocker. [br]Settings are configured, edited, and read from res://LootLockerSettings.cfg.
+##
+## To configure LootLocker, open or create res://LootLockerSettings.cfg. [br]
+## The file follows the ini format and needs to have the following settings: [code]api_key="<your api key from console.lootlocker.com>"[/code],
+## [code]domain_key="<your domain key from console.lootlocker.com>"[/code], [code]game_version="<a semver representation of the current game version>"[/code]. [br]
+## Find your Game Key and Domain Key in the [url=https://console.lootlocker.com/settings/api-keys]API section of the settings[/url]. 
+## Once you've done this, you will have a file that looks something like this:
+##  [codeblock lang=ini]
+##  [LootLockerSettings]
+##  ; You can get your api key from https://console.lootlocker.com/settings/api-keys
+##  api_key="prod_1c52468fc6e8420c955e3b6c303ea8cc"
+##  ; You can get your domain key from https://console.lootlocker.com/settings/api-keys
+##  domain_key="1g9glch3"
+##  ; The game version must follow a semver pattern. Read more at https://semver.org/
+##  game_version="1.2.1.4"
+## [/codeblock]
+##[br][color=light green][b]Copyright (c) 2024 LootLocker.[/b][/color]
 @tool
 class_name LootLockerInternal_Settings
+extends Resource
 
 const STAGE_URL : String = "api.stage.internal.dev.lootlocker.cloud"
 const PROD_URL : String = "api.lootlocker.com"
