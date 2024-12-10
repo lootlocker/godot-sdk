@@ -1,3 +1,6 @@
+## Internal LootLocker utility class that is used to serialize and deserialize json
+##
+##[color=light green][b]Copyright (c) 2024 LootLocker.[/b][/color]
 extends Node
 class_name LootLockerInternal_JsonUtilities
 

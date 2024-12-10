@@ -1,4 +1,8 @@
+## Internal LootLocker base class that specifies a generic base format for all HTTP requests so that they have as small a footprint as possible when implemented
+##
+##[color=light green][b]Copyright (c) 2024 LootLocker.[/b][/color]
 class_name LootLockerInternal_RequestDefinition
+extends RefCounted
 
 var responseType = null
 var response : LootLockerInternal_BaseResponse = null
@@ -18,6 +22,7 @@ static func __MakeErrorResponse(msg : String, statusCode : int = -1) -> LootLock
 	response.error_data.message = msg
 	return response
 
+## Initialize a request with the neccessary information to successfully send to LootLocker
 func _init(_endPoint : String, _HTTPMethod : HTTPClient.Method, _FieldsToCache : Array[String] = []) -> void:
 	endPoint = _endPoint
 	HTTPMethod = _HTTPMethod
@@ -26,10 +31,12 @@ func _init(_endPoint : String, _HTTPMethod : HTTPClient.Method, _FieldsToCache :
 		responseType = LootLockerInternal_BaseResponse
 	if request == null:
 		request = LootLockerInternal_BaseRequest.new()
-
+		
+## Overridable method for specific actions needed after a response has been received
 func responseHandler() :
 	pass
 
+## Send the configured request to the LootLocker servers
 func _send():
 	if __HTTPClient == null:
 		response = __MakeErrorResponse("No LootLocker HTTP Client available")
