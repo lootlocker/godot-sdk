@@ -1,3 +1,7 @@
+## Internal LootLocker utility class that is used to cache runtime information within and between game sessions
+##
+## Stores cached data in user://LootLockerCache.dat.
+##[br][color=light green][b]Copyright (c) 2024 LootLocker.[/b][/color]
 extends Node
 class_name LootLockerInternal_LootLockerCache
 
