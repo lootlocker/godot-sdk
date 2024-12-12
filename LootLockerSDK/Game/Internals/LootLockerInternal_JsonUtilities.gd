@@ -63,8 +63,12 @@ static func DictionaryToClass(dict: Dictionary, castClass) -> Object:
 
 			# If the property name matches the JSON key
 			if property.name == key:
+				# Case 0: Value is null so the rest doesn't matter
+				if property_value == null:
+					_class.set(property.name, null)
+					
 				# Case 1: Property is an Object (not an array)
-				if not property_value is Array and property.type == TYPE_OBJECT:
+				elif not property_value is Array and property.type == TYPE_OBJECT:
 					_class.set(property.name, DictionaryToClass(value, GetLootLockerObjectFromFieldReflection(property.name, castClass)))
 
 				# Case 2: Property is an Array
@@ -103,7 +107,7 @@ static func JsonArrayToClass(json_array: Array, cast_class) -> Array:
 		# Case 3: Property is a simple type (not an object or array)
 		else:
 			# Special handling for Color type (stored as a hex string)
-			if element.type == TYPE_COLOR:
+			if "type" in element && element.type == TYPE_COLOR:
 				element = Color(element)
 			godot_array.append(element)
 	return godot_array
