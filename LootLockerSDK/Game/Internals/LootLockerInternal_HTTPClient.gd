@@ -8,7 +8,7 @@ static var _instance : LootLockerInternal_HTTPClient = null
 static var LootLockerSettings = preload("./LootLockerInternal_Settings.gd")
 static var LootLockerCache = preload("../Resources/LootLockerInternal_LootLockerCache.gd")
 
-static var BASE_HEADERS = [
+static var BASE_HEADERS : Array[String] = [
 	"Content-Type: application/json"
 ]
 static var HTTP_METHOD_STRINGS : Array = ["GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE", "CONNECT", "PATCH"]
@@ -40,7 +40,7 @@ static func logLootLockerRequest(endpoint, requestType, body, result : LL_HTTPRe
 	if LootLockerSettings.ShouldLogDebugInformation():
 		print("##LootLockerDebug## -- " + HTTP_METHOD_STRINGS[requestType] + " to " + endpoint + "\n  with request body "+body+"\n  gave result: "+LootLockerInternal_JsonUtilities.ObjectToJsonString(result))
 
-func makeRequest(endpoint, requestType: HTTPClient.Method, body) -> LL_HTTPRequestResult:
+func makeRequest(endpoint, requestType: HTTPClient.Method, body, additionalHeaders : Array[String] = []) -> LL_HTTPRequestResult:
 	var httpClient = HTTPClient.new()
 	var url = LootLockerSettings.GetUrl()
 	
@@ -61,6 +61,10 @@ func makeRequest(endpoint, requestType: HTTPClient.Method, body) -> LL_HTTPReque
 	var sessionToken = LootLockerCache.current().get_data("session_token", "")
 	if(sessionToken != ""):
 		headers.append("x-session-token: " + sessionToken)
+	
+	if(!additionalHeaders.is_empty()):
+		for header in additionalHeaders:
+			headers.append(header)
 
 	while httpClient.get_status() == HTTPClient.STATUS_CONNECTING or httpClient.get_status() == HTTPClient.STATUS_RESOLVING:
 		httpClient.poll()

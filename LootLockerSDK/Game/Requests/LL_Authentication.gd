@@ -5,8 +5,10 @@ class_name LL_Authentication
 extends RefCounted
 const __SESSION_RESPONSE_FIELDS_TO_CACHE : Array[String] = ["session_token", "player_identifier", "player_name", "player_id", "player_ulid", "wallet_id"]
 
+#region Responses
+
 ## Base response class for authenticating a user towards the LootLocker servers
-class LL_BaseSessionResponse extends LootLockerInternal_BaseResponse:
+class _LL_BaseSessionResponse extends LootLockerInternal_BaseResponse:
 	## The session token that can now be used to use further LootLocker functionality. We store and use this for you.
 	var session_token : String
 	## The public UID for this player
@@ -30,23 +32,75 @@ class LL_BaseSessionResponse extends LootLockerInternal_BaseResponse:
 	## The id of the wallet for this account
 	var wallet_id : String
 
-## Request definition for Guest Authentication towards LootLocker
-class LL_GuestSessionRequest extends LootLockerInternal_BaseRequest:
-	## The identifier for this guest user
-	var player_identifier : String
-	## The game key as configured in LootLockerSettings.cfg
-	var game_key : String
-	## The game version as configured in LootLockerSettings.cfg
-	var game_version : String
-	
-	func _init(_player_identifier : String):
-		player_identifier = _player_identifier
-		var LootLockerSettings = preload("../Internals/LootLockerInternal_Settings.gd")
-		game_key = LootLockerSettings.GetApiKey()
-		game_version = LootLockerSettings.GetGameVersion()
+## Response object for a successful request to end session (meaning the request itself was successful, to know if the session was ended check the body)
+class _LL_EndSessionResponse extends LootLockerInternal_BaseResponse:
+	pass
 
-## Construct a request for authenticating the player towards the LootLocker servers as a guest user[br]
-## Usage:
+#endregion
+
+#region Requests Bodies
+
+## Internal Request Body Object
+class _LL_GuestSessionRequestBody extends LootLockerInternal_BaseRequest:
+	## The api key of the game you wish to start a session for
+	var game_key : String = ""
+	## The version of the game you wish to start a session for
+	var game_version : String = ""
+	## Returned on the initial call, then used for subsequent authentication calls, to keep the same guest account active over multiple sessions. 
+	var player_identifier : String = ""
+
+## Internal Request Body Object
+class _LL_SteamRequestBody extends LootLockerInternal_BaseRequest:
+	## API key found undre "API Keys" in the LootLocker console.
+	var game_api_key : String = ""
+	## The ticket from the signed in steam user on device
+	var steam_ticket : String = ""
+	## E.g "0.1".
+	var game_version : String = ""
+
+## Internal Request Body Object
+class _LL_SteamRequestWithAppIdBody extends _LL_SteamRequestBody:
+	## Optional. If you have configured multiple Steam App IDs in the console and need to specify which one to use.
+	var steam_app_id : String = ""
+
+#endregion
+
+#region Requests
+
+##Construct an HTTP Request in order to End the active LootLocker Session[br]
+##Usage:
+##[codeblock lang=gdscript]
+##var response = await LL_Authentication.EndSession.new().send()
+##if(!response.success) :
+##    # Request failed, handle errors
+##    pass
+##else:
+##    # On a successfull end session request, the response is a 204 (No Content).
+##    pass
+##[/codeblock][br]
+class EndSession extends LootLockerInternal_RequestDefinition:
+	func _init() -> void:
+		responseType = _LL_EndSessionResponse
+
+		var url = "/game/v1/session"
+		super._init(url, HTTPClient.Method.METHOD_DELETE, [])
+
+	func responseHandler():
+		if(response.success):
+			var LootLockerCache = preload("../Resources/LootLockerInternal_LootLockerCache.gd")
+			LootLockerCache.current().delete_data("session_token")
+			LootLockerCache.current().delete_data("white_label_email")
+			LootLockerCache.current().delete_data("white_label_session_token")
+
+
+	## Send the configured request to the LootLocker servers
+	func send() -> _LL_EndSessionResponse:
+		await _send()
+		return response
+
+##Construct an HTTP Request in order to Guest Session[br]
+##
+##Usage:
 ##[codeblock lang=gdscript]
 ##var response = await LL_Authentication.GuestSession.new().send()
 ##if(!response.success) :
@@ -56,50 +110,30 @@ class LL_GuestSessionRequest extends LootLockerInternal_BaseRequest:
 ##    # Request succeeded, use response as applicable in your game logic
 ##    pass
 ##[/codeblock][br]
-## [b]Note:[/b] You can alternatively authenticate the guest user with a specific (for example user defined) player identifier like this
-## [codeblock lang=gdscript]await LL_Authentication.GuestSession.new("<your custom identifier>").send()[/codeblock]
+##[b]Note:[/b] You can alternatively authenticate the guest user with a specific (for example user defined) player identifier like this
+##[codeblock lang=gdscript]await LL_Authentication.GuestSession.new("<your custom identifier>").send()[/codeblock]
 class GuestSession extends LootLockerInternal_RequestDefinition:
-	func _init(playerIdentifier : String = "") -> void:
-		responseType = LL_BaseSessionResponse
-		if(playerIdentifier == ""):
+	func _init(player_identifier : String = "") -> void:
+		responseType = _LL_BaseSessionResponse
+		if(player_identifier == ""):
 			var LootLockerCache = preload("../Resources/LootLockerInternal_LootLockerCache.gd")
-			playerIdentifier = LootLockerInternal_LootLockerCache.current().get_data("player_identifier", "")
-		request = LL_GuestSessionRequest.new(playerIdentifier)
-		super._init("/game/v2/session/guest", HTTPClient.Method.METHOD_POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
-	
+			player_identifier = LootLockerCache.current().get_data("player_identifier", "")
+		request = _LL_GuestSessionRequestBody.new()
+		var LootLockerSettings = preload("../Internals/LootLockerInternal_Settings.gd")
+		request.game_key = LootLockerSettings.GetApiKey()
+		request.game_version = LootLockerSettings.GetGameVersion()
+		request.player_identifier = player_identifier
+
+		var url = "/game/v2/session/guest"
+		super._init(url, HTTPClient.Method.METHOD_POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
+
 	## Send the configured request to the LootLocker servers
-	func send() -> LL_BaseSessionResponse:
-		var LootLockerCache = preload("../Resources/LootLockerInternal_LootLockerCache.gd").current()
-		LootLockerCache.delete_data("session_token")
+	func send() -> _LL_BaseSessionResponse:
 		await _send()
 		return response
-	
-## Request definition for Steam Authentication towards LootLocker
-class LL_SteamSessionRequest extends LootLockerInternal_BaseRequest:
-	## The game key as configured in LootLockerSettings.cfg
-	var game_api_key : String
-	## The game version as configured in LootLockerSettings.cfg
-	var game_version : String
-	## The steam ticket set for this authentication request
-	var steam_ticket : String
-	
-	func _init(_steam_ticket : String):
-		steam_ticket = _steam_ticket
-		var LootLockerSettings = preload("../Internals/LootLockerInternal_Settings.gd")
-		game_api_key = LootLockerSettings.GetApiKey()
-		game_version = LootLockerSettings.GetGameVersion()
-	
-## Request definition for Steam Authentication towards LootLocker
-class LL_SteamSessionRequestWithAppId extends LL_SteamSessionRequest:
-	## The specific steam app id set for this authentication request
-	var steam_app_id : String
-	
-	func _init(_steam_ticket : String, _steam_app_id : String = ""):
-		steam_app_id = _steam_app_id
-		super._init(_steam_ticket)
 
-## Construct a request for authenticating the player towards the LootLocker servers as a steam user[br]
-## Usage:
+##Construct an HTTP Request in order to Steam[br]
+##Usage:
 ##[codeblock lang=gdscript]
 ##var response = await LL_Authentication.SteamSession.new("<steam ticket>").send()
 ##if(!response.success) :
@@ -111,18 +145,23 @@ class LL_SteamSessionRequestWithAppId extends LL_SteamSessionRequest:
 ##[/codeblock][br]
 ## [b]Note:[/b] You can alternatively authenticate the steam user with a specific steam app id (in case you have multiple versions of your game)
 ## [codeblock lang=gdscript]await LL_Authentication.SteamSession.new("<steam ticket>", "<steam app id>").send()[/codeblock]
-class SteamSession extends LootLockerInternal_RequestDefinition:
-	func _init(steamTicket : String, steamAppId : String = "") -> void:
-		responseType = LL_BaseSessionResponse
-		if !steamAppId.is_empty():
-			request = LL_SteamSessionRequestWithAppId.new(steamTicket, steamAppId)
-		else:
-			request = LL_SteamSessionRequest.new(steamTicket)
-		super._init("/game/session/steam", HTTPClient.Method.METHOD_POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
-		
+class Steam extends LootLockerInternal_RequestDefinition:
+	func _init(steam_ticket : String, steam_app_id : String = "") -> void:
+		responseType = _LL_BaseSessionResponse
+		request = _LL_SteamRequestBody.new() if steam_app_id == "" else _LL_SteamRequestWithAppIdBody.new()
+		var LootLockerSettings = preload("../Internals/LootLockerInternal_Settings.gd")
+		request.game_key = LootLockerSettings.GetApiKey()
+		request.game_version = LootLockerSettings.GetGameVersion()
+		request.steam_ticket = steam_ticket
+		if(steam_app_id != ""):
+			request.steam_app_id = steam_app_id
+
+		var url = "/game/session/steam"
+		super._init(url, HTTPClient.Method.METHOD_POST, __SESSION_RESPONSE_FIELDS_TO_CACHE)
+
 	## Send the configured request to the LootLocker servers
-	func send() -> LL_BaseSessionResponse:
-		var LootLockerCache = preload("../Resources/LootLockerInternal_LootLockerCache.gd").current()
-		LootLockerCache.delete_data("session_token")
+	func send() -> _LL_BaseSessionResponse:
 		await _send()
-		return response		
+		return response
+
+#endregion
