@@ -30,7 +30,7 @@ static func GetLootLockerObjectFromFieldReflection(fieldName : String, onClass :
 	if onClass.has_method("__LootLockerInternal_GetReflection"):
 		LLReflection = onClass.__LootLockerInternal_GetReflection()
 	else:
-		printerr("LootLocker reflection was requested for object without reflection defined. Field name was " + fieldName + ". Please reach out to the LootLocker team with this error")
+		print("LootLocker reflection was requested for object without reflection defined. Field name was " + fieldName + ". Please reach out to the LootLocker team with this error")
 	return LLReflection.get(fieldName, null)
 
 ## Converts a JSON dictionary into a Godot class instance.
@@ -64,7 +64,7 @@ static func DictionaryToClass(dict: Dictionary, castClass) -> Object:
 			# If the property name matches the JSON key
 			if property.name == key:
 				# Case 0: Value is null so the rest doesn't matter
-				if property_value == null:
+				if value == null:
 					_class.set(property.name, null)
 					
 				# Case 1: Property is an Object (not an array)
