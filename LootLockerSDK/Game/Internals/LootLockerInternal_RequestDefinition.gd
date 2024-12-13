@@ -10,6 +10,7 @@ var request : LootLockerInternal_BaseRequest = null
 var endPoint : String = ""
 var HTTPMethod : HTTPClient.Method = HTTPClient.Method.METHOD_GET
 var FieldsToCache : Array[String] = []
+var AdditionalHeaders : Array[String] = []
 var __JsonParser = preload("./LootLockerInternal_JsonUtilities.gd")
 var __HTTPClient = preload("./LootLockerInternal_HTTPClient.gd")
 
@@ -51,7 +52,7 @@ func _send():
 	var requestBody = __JsonParser.ObjectToJsonString(request)
 	if HTTPMethod == HTTPClient.Method.METHOD_GET || HTTPMethod == HTTPClient.Method.METHOD_HEAD:
 		requestBody = ""
-	var result = await LootLocker.makeRequest(endPoint, HTTPMethod, requestBody)
+	var result = await LootLocker.makeRequest(endPoint, HTTPMethod, requestBody, AdditionalHeaders)
 	if !result:
 		response = __MakeErrorResponse("Received null result from HTTP Client")
 		return
