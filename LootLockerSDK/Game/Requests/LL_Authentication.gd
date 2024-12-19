@@ -3,7 +3,7 @@
 ##[color=light green][b]Copyright (c) 2024 LootLocker.[/b][/color]
 class_name LL_Authentication
 extends RefCounted
-const __SESSION_RESPONSE_FIELDS_TO_CACHE : Array[String] = ["session_token", "player_identifier", "player_name", "player_id", "player_ulid", "wallet_id"]
+const __SESSION_RESPONSE_FIELDS_TO_CACHE : Array[String] = ["session_token", "player_identifier", "player_name", "player_id", "public_uid", "player_ulid", "wallet_id"]
 
 #region Responses
 
