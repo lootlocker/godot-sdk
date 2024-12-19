@@ -71,6 +71,9 @@ class _LL_LeaderboardScheduleDataDefinition:
 	var last_run : String = ""
 	## A list of all the schedules that has previously ran
 	var schedule : Array[String] = []
+	static func __LootLockerInternal_GetReflection() -> Dictionary:
+		return {
+		}
 
 ## Data object with predicate argument information
 class _LL_LeaderboardRewardPredicatesArgsDataDefinition:
