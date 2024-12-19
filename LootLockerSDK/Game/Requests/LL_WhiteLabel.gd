@@ -258,7 +258,9 @@ class LoginAndStartSession extends RefCounted:
 	func send() -> _LL_BaseSessionResponse:
 		var loginResponse = await Login.new(_email, _password, _remember).send()
 		if(!loginResponse.success):
-			return loginResponse
+			var placeHolderResponse = _LL_BaseSessionResponse.new()
+			placeHolderResponse.error_data = loginResponse.error_data
+			return placeHolderResponse
 		return await StartSession.new(_email).send()
 
 ##Construct an HTTP Request in order to Request Verification[br]
