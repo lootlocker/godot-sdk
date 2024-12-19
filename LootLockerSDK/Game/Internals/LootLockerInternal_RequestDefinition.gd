@@ -15,13 +15,13 @@ var __JsonParser = preload("./LootLockerInternal_JsonUtilities.gd")
 var __HTTPClient = preload("./LootLockerInternal_HTTPClient.gd")
 
 static func __MakeErrorResponse(msg : String, statusCode : int = -1) -> LootLockerInternal_BaseResponse:
-	var response = LootLockerInternal_BaseResponse.new()
-	response.raw_response_body = "{ \"message\": \""+msg+"\" }"
-	response.status_code = -1
-	response.success = false
-	response.error_data = LootLockerInternal_BaseResponse.LL_ErrorData.new()
-	response.error_data.message = msg
-	return response
+	var resp = LootLockerInternal_BaseResponse.new()
+	resp.raw_response_body = "{ \"message\": \""+msg+"\" }"
+	resp.status_code = statusCode
+	resp.success = false
+	resp.error_data = LootLockerInternal_BaseResponse.LL_ErrorData.new()
+	resp.error_data.message = msg
+	return resp
 
 ## Initialize a request with the neccessary information to successfully send to LootLocker
 func _init(_endPoint : String, _HTTPMethod : HTTPClient.Method, _FieldsToCache : Array[String] = []) -> void:
