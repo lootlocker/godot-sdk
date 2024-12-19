@@ -56,7 +56,8 @@ func makeRequest(endpoint, requestType: HTTPClient.Method, body, additionalHeade
 		logLootLockerRequest(endpoint, requestType, body, res)
 		return res
 
-	var headers = BASE_HEADERS
+	var headers : Array[String] = []
+	headers.append_array(BASE_HEADERS)
 	# Add session-token if a subsequent request
 	var sessionToken = LootLockerCache.current().get_data("session_token", "")
 	if(sessionToken != ""):
