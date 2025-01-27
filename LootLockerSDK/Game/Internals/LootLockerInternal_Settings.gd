@@ -18,7 +18,6 @@
 ##  logLevel="Info"
 ## [/codeblock]
 ##[br][color=light green][b]Copyright (c) 2024 LootLocker.[/b][/color]
-@tool
 class_name LootLockerInternal_Settings
 extends Resource
 
@@ -58,6 +57,9 @@ static func GetInstance() -> LootLockerInternal_Settings:
 	return _instance
 
 func _init() -> void:
+	loadSettings()
+
+func loadSettings() -> void:
 	var settings = ConfigFile.new()
 	var err = settings.load(SETTINGS_PATH)
 	if ( err != OK ):
