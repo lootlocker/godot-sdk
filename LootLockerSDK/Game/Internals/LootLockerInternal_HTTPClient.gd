@@ -6,6 +6,7 @@ class_name LootLockerInternal_HTTPClient
 
 static var _instance : LootLockerInternal_HTTPClient = null
 static var LootLockerSettings = preload("./LootLockerInternal_Settings.gd")
+static var LootLockerLogger = preload("./LootLockerInternal_Logger.gd")
 static var LootLockerCache = preload("../Resources/LootLockerInternal_LootLockerCache.gd")
 
 static var BASE_HEADERS : Array[String] = [
@@ -37,8 +38,8 @@ class LL_HTTPRequestResult:
 		retryAfterSeconds = _retryAfterSeconds
 		
 static func logLootLockerRequest(endpoint, requestType, body, result : LL_HTTPRequestResult):
-	if LootLockerSettings.ShouldLogDebugInformation():
-		print("##LootLockerDebug## -- " + HTTP_METHOD_STRINGS[requestType] + " to " + endpoint + "\n  with request body "+body+"\n  gave result: "+LootLockerInternal_JsonUtilities.ObjectToJsonString(result))
+		var logLevel : LootLockerInternal_Logger.LL_LogLevel = LootLockerInternal_Logger.LL_LogLevel.Verbose if result.success else LootLockerInternal_Logger.LL_LogLevel.Warning
+		LootLockerLogger.Log(HTTP_METHOD_STRINGS[requestType] + " to " + endpoint + "\n  with request body "+body+"\n  gave result: "+LootLockerInternal_JsonUtilities.ObjectToJsonString(result), logLevel)
 
 func makeRequest(endpoint, requestType: HTTPClient.Method, body, additionalHeaders : Array[String] = []) -> LL_HTTPRequestResult:
 	var httpClient = HTTPClient.new()
