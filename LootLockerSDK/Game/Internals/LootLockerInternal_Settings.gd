@@ -13,6 +13,9 @@
 ##  domain_key="1g9glch3"
 ##  ; The game version must follow a semver pattern. Read more at https://semver.org/
 ##  game_version="1.2.1.4"
+##  ; The configured Log Level for LootLocker, Set to "None" to silence LootLocker logs completely
+##  ; Possible values are: "Debug", "Verbose", "Info", "Warning", "Error", "None"
+##  logLevel="Info"
 ## [/codeblock]
 ##[br][color=light green][b]Copyright (c) 2024 LootLocker.[/b][/color]
 @tool
@@ -26,7 +29,7 @@ var apiKey : String = ""
 var gameVersion : String = ""
 var domainKey : String = ""
 var url : String
-var shouldLogDebugInformation : bool = false
+var logLevel : String = ""
 
 static func _static_init() -> void:
 	if Engine.is_editor_hint():
@@ -44,8 +47,8 @@ static func GetGameVersion() -> String:
 static func GetUrl() -> String:
 	return GetInstance().url
 	
-static func ShouldLogDebugInformation() -> bool:
-	return GetInstance().shouldLogDebugInformation
+static func GetLogLevel() -> String:
+	return GetInstance().logLevel
 
 static var _instance : LootLockerInternal_Settings = null;
 
@@ -84,7 +87,7 @@ func _init() -> void:
 		url = urlStart+STAGE_URL
 	else:
 		url = urlStart+PROD_URL
-	shouldLogDebugInformation = settings.get_value("LootLockerInternalSettings", "debug_log", false)
+	logLevel = settings.get_value("LootLockerSettings", "logLevel", "Info")
 	return
 
 static func __CreateSettingsFile():
@@ -97,6 +100,9 @@ static func __CreateSettingsFile():
 		file.store_line("domain_key=\"\"")
 		file.store_line("; The game version must follow a semver pattern. Read more at https://semver.org/")
 		file.store_line("game_version=\"\"")
+		file.store_line("; The configured Log Level for LootLocker, Set to \"None\" to silence LootLocker logs completely")
+		file.store_line("; Possible values are: \"Debug\", \"Verbose\", \"Info\", \"Warning\", \"Error\", \"None\"")
+		file.store_line("logLevel=\"Info\"")
 		file.close()
 		if Engine.is_editor_hint(): 
 			var editor_interface = Engine.get_singleton("EditorInterface")
