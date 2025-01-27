@@ -9,7 +9,8 @@
   <a href="#installation">Installation</a> •
   <a href="#configuration">Configuration</a> •
   <a href="#usage">Usage</a> •
-  <a href="#development">Usage</a> •
+  <a href="#development">Development</a> •
+  <a href="#documentation">Documentation</a> •
   <a href="#support">Support</a> •
 </p>
 
@@ -46,6 +47,12 @@ Full documentation is available here https://docs.lootlocker.com/
   domain_key="1g9glch3"
   ; The game version must follow a semver pattern. Read more at https://semver.org/
   game_version="1.2.1.4"
+  ```
+- Optionally: You can configure the log level of the LootLocker SDK by adding  
+  ```ini
+  ; The configured Log Level for LootLocker, Set to "None" to silence LootLocker logs completely
+  ; Possible values are: "Debug", "Verbose", "Info", "Warning", "Error", "None"
+  logLevel="Debug"
   ```
 
 ## Usage
@@ -87,6 +94,9 @@ The LootLocker Godot SDK is provided as open source, and we appreciate community
 - If you are uncertain about anything, ask in our [discord](#support)
 - Once you are done, make a pull request in github and get a review from the maintainers
 - Once the maintainers accept the pull request, they will merge it and make a release with your changes
+
+## Documentation
+For more information on how to use the Godot SDK, [check out our documentation](https://docs.lootlocker.com/).
 
 ## Support
 If you have any issues or just wanna chat you can reach us on our [Discord Server](https://discord.lootlocker.io/)
