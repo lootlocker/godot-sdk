@@ -27,7 +27,8 @@ Full documentation is available here https://docs.lootlocker.com/
 - Go to the [latest release of the LootLocker SDK in GitHub](https://github.com/lootlocker/godot-sdk/releases/latest)
 - At the bottom of the release you will find attached assets. Download the zip corresponding to your version of Godot.
 - Extract the contents from the downloaded zip file. This will yield a folder named LootLockerSDK.
-- Copy the extracted folder (called LootLockerSDK) into your Godot project. Place it into your project's structure in a way that makes sense for you.
+- Copy the extracted folder (called LootLockerSDK) into your Godot project. Place it into your projects addons folder (create it if it does not exist).
+- Enable the LootLockerSDK addon in Project Settings > Plugins
 - You're all set
 
 ## Configuration
