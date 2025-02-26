@@ -98,7 +98,7 @@ class EndSession extends LootLockerInternal_RequestDefinition:
 		await _send()
 		return response
 
-##Construct an HTTP Request in order to Guest Session[br]
+##Construct an HTTP Request in order to start a Guest Session[br]
 ##
 ##Usage:
 ##[codeblock lang=gdscript]
@@ -132,7 +132,7 @@ class GuestSession extends LootLockerInternal_RequestDefinition:
 		await _send()
 		return response
 
-##Construct an HTTP Request in order to Steam[br]
+##Construct an HTTP Request in order to authenticate with Steam[br]
 ##Usage:
 ##[codeblock lang=gdscript]
 ##var response = await LL_Authentication.SteamSession.new("<steam ticket>").send()
@@ -145,12 +145,12 @@ class GuestSession extends LootLockerInternal_RequestDefinition:
 ##[/codeblock][br]
 ## [b]Note:[/b] You can alternatively authenticate the steam user with a specific steam app id (in case you have multiple versions of your game)
 ## [codeblock lang=gdscript]await LL_Authentication.SteamSession.new("<steam ticket>", "<steam app id>").send()[/codeblock]
-class Steam extends LootLockerInternal_RequestDefinition:
+class SteamSession extends LootLockerInternal_RequestDefinition:
 	func _init(steam_ticket : String, steam_app_id : String = "") -> void:
 		responseType = _LL_BaseSessionResponse
 		request = _LL_SteamRequestBody.new() if steam_app_id == "" else _LL_SteamRequestWithAppIdBody.new()
 		var LootLockerSettings = preload("../Internals/LootLockerInternal_Settings.gd")
-		request.game_key = LootLockerSettings.GetApiKey()
+		request.game_api_key = LootLockerSettings.GetApiKey()
 		request.game_version = LootLockerSettings.GetGameVersion()
 		request.steam_ticket = steam_ticket
 		if(steam_app_id != ""):
@@ -163,5 +163,11 @@ class Steam extends LootLockerInternal_RequestDefinition:
 	func send() -> _LL_BaseSessionResponse:
 		await _send()
 		return response
+		
+static func ParseSteamAuthTicket(buffer : Array, bufferSize : int):
+	var HexString : String = ""
+	for element in buffer.slice(0, bufferSize):
+		HexString += ("%02X" % element)
+	return HexString
 
 #endregion
