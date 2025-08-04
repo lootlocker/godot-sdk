@@ -69,6 +69,11 @@ class _LL_BaseSessionResponse extends LootLockerInternal_BaseResponse:
 	## The id of the wallet for this account
 	var wallet_id : String
 
+## Base response class for authenticating a user towards the LootLocker servers
+class _LL_SessionResponseWithWhiteLabelToken extends _LL_BaseSessionResponse:
+	## The token identifying this white label session. Use this in future starts to check the session.
+	var white_label_session_token : String
+
 ## Response class for requesting player verification (The response is a 204 no content meaning it will be empty unless it failed)
 class RequestVerificationResponse extends LootLockerInternal_BaseResponse:
 	pass
@@ -255,13 +260,36 @@ class LoginAndStartSession extends RefCounted:
 		_remember = remember
 
 	## Send the configured request to the LootLocker servers
-	func send() -> _LL_BaseSessionResponse:
+	func send() -> _LL_SessionResponseWithWhiteLabelToken:
 		var loginResponse = await Login.new(_email, _password, _remember).send()
 		if(!loginResponse.success):
-			var placeHolderResponse = _LL_BaseSessionResponse.new()
+			var placeHolderResponse = _LL_SessionResponseWithWhiteLabelToken.new()
 			placeHolderResponse.error_data = loginResponse.error_data
 			return placeHolderResponse
-		return await StartSession.new(_email).send()
+		var startSessionResponse = await StartSession.new(_email).send()
+		if(!startSessionResponse.success):
+			var placeHolderResponse = _LL_SessionResponseWithWhiteLabelToken.new()
+			placeHolderResponse.error_data = startSessionResponse.error_data
+			placeHolderResponse.white_label_session_token = loginResponse.error_data
+			return placeHolderResponse
+		var placeHolderResponse = _LL_SessionResponseWithWhiteLabelToken.new()
+		placeHolderResponse.success = startSessionResponse.success
+		placeHolderResponse.status_code = startSessionResponse.status_code
+		placeHolderResponse.raw_response_body = startSessionResponse.raw_response_body
+		placeHolderResponse.error_data = startSessionResponse.error_data
+		placeHolderResponse.white_label_session_token = loginResponse.session_token
+		placeHolderResponse.session_token = startSessionResponse.session_token
+		placeHolderResponse.public_uid = startSessionResponse.public_uid
+		placeHolderResponse.player_name = startSessionResponse.player_name
+		placeHolderResponse.player_created_at = startSessionResponse.player_created_at
+		placeHolderResponse.player_identifier = startSessionResponse.player_identifier
+		placeHolderResponse.player_id = startSessionResponse.player_id
+		placeHolderResponse.player_ulid = startSessionResponse.player_ulid
+		placeHolderResponse.seen_before = startSessionResponse.seen_before
+		placeHolderResponse.check_grant_notifications = startSessionResponse.check_grant_notifications
+		placeHolderResponse.check_deactivation_notifications = startSessionResponse.check_deactivation_notifications
+		placeHolderResponse.wallet_id = startSessionResponse.wallet_id
+		return placeHolderResponse
 
 ##Construct an HTTP Request in order to Request Verification[br]
 ##
