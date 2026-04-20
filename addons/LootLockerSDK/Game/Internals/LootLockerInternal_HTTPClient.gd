@@ -74,7 +74,7 @@ func makeRequest(endpoint, requestType: HTTPClient.Method, body, additionalHeade
 	
 	var httpConnectStatus = httpClient.get_status()
 	if httpConnectStatus != HTTPClient.STATUS_CONNECTED:
-		var res = LL_HTTPRequestResult.new("{ \"message\": \"Could not connect to LootLocker, http status was "+httpConnectStatus+"\"}", 0, false, -1)
+		var res = LL_HTTPRequestResult.new("{ \"message\": \"Could not connect to LootLocker, http status was "+str(httpConnectStatus)+"\"}", 0, false, -1)
 		logLootLockerRequest(endpoint, requestType, body, res)
 		return res
 	
