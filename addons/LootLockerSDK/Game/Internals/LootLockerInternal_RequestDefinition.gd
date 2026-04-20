@@ -61,7 +61,7 @@ func _send():
 	if !parsedResponse:
 		response = __MakeErrorResponse("Failed to parse result of request: " + endPoint + ", with body " + requestBody + " \n  Returned code " + str(result.statusCode) + " and body " + result.body)
 		return
-	response = __JsonParser.ObjectFromJsonString(result.body, FieldsToCache, responseType)
+	response = parsedResponse
 	response.raw_response_body = result.body
 	response.status_code = result.statusCode
 	response.success = result.success
