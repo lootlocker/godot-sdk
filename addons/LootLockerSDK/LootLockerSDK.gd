@@ -7,11 +7,8 @@ static var LootLockerSettings = preload("./Game/Internals/LootLockerInternal_Set
 
 
 func _enable_plugin():
-	add_autoload_singleton(AUTOLOAD_NAME, "res://addons/LootLockerSDK/LootLockerSDK.gd")
+	add_autoload_singleton(AUTOLOAD_NAME, "res://addons/LootLockerSDK/LootLockerSDK_Autoload.gd")
 	LootLockerSettings.GetInstance().loadSettings()
 
 func _disable_plugin():
 	remove_autoload_singleton(AUTOLOAD_NAME)
-
-func _init() -> void:
-	LootLockerSettings.GetInstance().loadSettings()
